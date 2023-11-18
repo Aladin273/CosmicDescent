@@ -10,19 +10,17 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"Paper2D",
-				"PaperZD"
+				"Paper2D"
 			]
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "PaperZD",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/c4b43502026047d89296cd7bffd92828"
 		}
 	],
 	"TargetPlatforms": [
 		"Windows"
+	],
+	"Plugins": [
+		{
+			"Name": "Paper2D",
+			"Enabled": true
+		}
 	]
 }

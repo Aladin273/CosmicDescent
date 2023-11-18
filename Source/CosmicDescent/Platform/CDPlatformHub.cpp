@@ -3,7 +3,7 @@
 
 #include "CDPlatformHub.h"
 
-#include "../Player/CDPaperZDCharacter.h"
+#include "../Player/CDPaperCharacter.h"
 
 // Sets default values
 ACDPlatformHub::ACDPlatformHub()
@@ -31,7 +31,7 @@ void ACDPlatformHub::BeginPlay()
 
 void ACDPlatformHub::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<ACDPaperZDCharacter>(OtherActor))
+	if (Cast<ACDPaperCharacter>(OtherActor))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "Overlap Box");
 
