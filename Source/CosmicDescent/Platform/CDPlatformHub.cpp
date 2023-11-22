@@ -1,100 +1,84 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "CDPlatformHub.h"
 
-#include "../Player/CDPaperCharacter.h"
+#include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
-// Sets default values
+#include "CDPlatform.h"
+#include "../Player/CDPaperCharacter.h"
+#include "../AI/CDAICharacter.h"
+
 ACDPlatformHub::ACDPlatformHub()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
 	BoxComponent->SetupAttachment(GetRootComponent());
 }
 
-// Called when the game starts or when spawned
 void ACDPlatformHub::BeginPlay()
 {
 	Super::BeginPlay();
 
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ACDPlatformHub::OnOverlap);
 
-	Rotation = GetActorRotation();
-	Location = GetActorLocation();
+	PlatformRotation = GetActorRotation();
+	PlatformLocation = GetActorLocation();
 
-	for (int32 Index = 0; Index < Count; ++Index)
-		SpawnPlatform();
-}
-
-void ACDPlatformHub::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (Cast<ACDPaperCharacter>(OtherActor))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "Overlap Box");
-
+	for (int32 Index = 0; Index < PlatformCount; ++Index)
 		SpawnPlatform();
 
-		if (PlatformArray.Num() > Count)
-			DeletePlatform();
-	}
+	SpawnPlatform();
 }
 
 void ACDPlatformHub::SpawnPlatform()
 {
-	if (PrevIndex == 0)
-	{
-		if (PrevRight == true)
-		{
-			Random = 1;
-			PrevRight = true;
-		}
-		else if (PrevRight == false)
-		{
-			Random = 2;
-			PrevRight = false;
-		}
-	}
-	else if (PrevIndex == 1)
-	{
-		Random = FMath::RandBool() ? 0 : 2;
-		PrevRight = false;
-	}
-	else if (PrevIndex == 2)
-	{
-		Random = FMath::RandBool() ? 0 : 1;
-		PrevRight = true;
-	}
+	int32 Random;
 
-	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(PlatformPayload[Random], Location, Rotation);
+	do 
+		Random = FMath::FRandRange(0.0f, PlatformPayload.Num() - 0.001f);
+	while (PlatformPayload[Random].PlatformDirection == PlatformDirection || PlatformPayload[Random].PlatformDirection == PlatformAnyDirection);
+
+	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(PlatformPayload[Random].PlatformClass, PlatformLocation, PlatformRotation);
 	PlatformArray.Add(SpawnedActor);
+	PlatformAnyDirection = PlatformPayload[Random].PlatformDirection;
+
+	if (PlatformPayload[Random].PlatformDirection != ECDPlatformDirection::None)
+		PlatformDirection = PlatformPayload[Random].PlatformDirection;
 
 	FVector Origin;
 	FVector BoxExtent;
 	SpawnedActor->GetActorBounds(false, Origin, BoxExtent);
+	PlatformLocation.Z -= BoxExtent.Z * 2;
 
-	PrevIndex = Random;
-	Location.Z -= BoxExtent.Z * 2;
-
-	BoxComponent->SetBoxExtent(BoxExtent * 2);
-	BoxComponent->SetWorldLocation(PlatformArray[PlatformArray.Num() - 1]->GetActorLocation());
-
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "Spawned Platform");
+	BoxComponent->SetBoxExtent(BoxExtent);
+	BoxComponent->SetWorldLocation(SpawnedActor->GetActorLocation());
 }
 
 void ACDPlatformHub::DeletePlatform()
 {
 	PlatformArray[0]->Destroy();
 	PlatformArray.RemoveAt(0);
-
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "Destroyed Platform");
 }
 
-// Called every frame
-void ACDPlatformHub::Tick(float DeltaTime)
+void ACDPlatformHub::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::Tick(DeltaTime);
+	if (Cast<ACDPaperCharacter>(OtherActor))
+	{
+		SpawnPlatform();
+
+		if (PlatformArray.Num() > PlatformCount)
+			DeletePlatform();
+
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, "Overlap Player");
+	}
+	else if (Cast<ACDAICharacter>(OtherActor))
+	{
+		AActor* Player = UGameplayStatics::GetActorOfClass(GetWorld(), APaperCharacter::StaticClass());		
+		AActor* AI = UGameplayStatics::GetActorOfClass(GetWorld(), ACDAICharacter::StaticClass());
+		AI->SetActorLocation(Player->GetActorLocation());
+	}
 }
 

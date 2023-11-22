@@ -65,7 +65,7 @@ void ACDPaperCharacter::UpdateAnimation()
 
 	if (GetCapsuleComponent()->IsSimulatingPhysics() || GetCharacterMovement()->IsFalling())
 		CurrentAnimation = JumpAnimation;
-	else if (isSliding())
+	else if (IsSliding())
 		CurrentAnimation = SlideAnimation;
 	else if (!GetInputVelocity().IsZero())
 		CurrentAnimation = RunAnimation;
@@ -88,13 +88,13 @@ FVector ACDPaperCharacter::GetRelativeVelocity() const
 
 void ACDPaperCharacter::Slide()
 {
-	if (GetCharacterMovement()->IsFalling() || GetInputVelocity().IsZero() || isSliding())
+	if (GetCharacterMovement()->IsFalling() || GetInputVelocity().IsZero() || IsSliding())
 		return;
 
 	StartSliding();
 }
 
-bool ACDPaperCharacter::isSliding()
+bool ACDPaperCharacter::IsSliding()
 {
 	return bIsSliding;
 }

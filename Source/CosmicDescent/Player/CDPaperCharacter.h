@@ -67,7 +67,7 @@ public:
 	void Slide();
 
 	UFUNCTION(BlueprintCallable)
-	bool isSliding();
+	bool IsSliding();
 
 private:
 	void StartSliding();

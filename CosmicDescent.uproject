@@ -15,7 +15,8 @@
 		}
 	],
 	"TargetPlatforms": [
-		"Windows"
+		"Windows",
+		"Android"
 	],
 	"Plugins": [
 		{
