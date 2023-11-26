@@ -1,2 +1,4 @@
 Cosmic Descent
 -------------------------------------------------------------------
+Tileset, Textures Speedup, Сomplexity
+Start, Platforms, Blocks, GameOver, Final

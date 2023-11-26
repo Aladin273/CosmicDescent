@@ -46,7 +46,7 @@ public:
 	TArray<FCDPlatfromPayload> PlatformPayload;
 
 	UPROPERTY(EditAnywhere)
-    int32 PlatformCount = 5;
+    int32 PlatformCount = 10;
 
 protected:
 	virtual void BeginPlay() override;

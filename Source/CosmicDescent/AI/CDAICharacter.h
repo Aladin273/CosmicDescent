@@ -29,7 +29,7 @@ public:
 	float ForceUpdateTime = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float ForceAcceleration = 1.f;
+	float ForceAcceleration = 2.f;
 
 protected:
 	virtual void BeginPlay() override;

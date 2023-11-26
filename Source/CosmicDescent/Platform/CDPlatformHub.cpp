@@ -27,9 +27,6 @@ void ACDPlatformHub::BeginPlay()
 	PlatformRotation = GetActorRotation();
 	PlatformLocation = GetActorLocation();
 
-	for (int32 Index = 0; Index < PlatformCount; ++Index)
-		SpawnPlatform();
-
 	SpawnPlatform();
 }
 
@@ -72,7 +69,7 @@ void ACDPlatformHub::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* Othe
 		if (PlatformArray.Num() > PlatformCount)
 			DeletePlatform();
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, "Overlap Player");
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, "Overlap " + OverlappedComp->GetName());
 	}
 	else if (Cast<ACDAICharacter>(OtherActor))
 	{
