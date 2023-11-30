@@ -1,4 +1,18 @@
 Cosmic Descent
 -------------------------------------------------------------------
-Tileset, Textures Speedup, Сomplexity
+Tileset, Textures, Speedup, Сomplexity
 Start, Platforms, Blocks, GameOver, Final
+
+Escape from a spaceship with a crazy defense mechanism on board!
+
+Controls :
+W, A, S, D - Movement
+Space Bar - Jump
+Left Shift - Slide
+
+How to play :
+1. Jump to avoid blocks
+2. Slide to increase speed
+3. Crash into wall to launch yourself
+
+Enjoy every moment!

@@ -27,49 +27,49 @@ void ACDPlatformHub::BeginPlay()
 	PlatformRotation = GetActorRotation();
 	PlatformLocation = GetActorLocation();
 
-	SpawnPlatform();
+	SpawnPlatform(0);
 }
 
-void ACDPlatformHub::SpawnPlatform()
+void ACDPlatformHub::SpawnPlatform(int32 Index)
 {
-	int32 Random;
-
-	do 
-		Random = FMath::FRandRange(0.0f, PlatformPayload.Num() - 0.001f);
-	while (PlatformPayload[Random].PlatformDirection == PlatformDirection || PlatformPayload[Random].PlatformDirection == PlatformAnyDirection);
-
-	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(PlatformPayload[Random].PlatformClass, PlatformLocation, PlatformRotation);
+	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(PlatformPayload[Index].PlatformClass, PlatformLocation, PlatformRotation);
 	PlatformArray.Add(SpawnedActor);
-	PlatformAnyDirection = PlatformPayload[Random].PlatformDirection;
+	PlatformState = PlatformPayload[Index].PlatformDirection;
 
-	if (PlatformPayload[Random].PlatformDirection != ECDPlatformDirection::None)
-		PlatformDirection = PlatformPayload[Random].PlatformDirection;
+	if (PlatformPayload[Index].PlatformDirection != ECDPlatformDirection::None)
+		PlatformDirection = PlatformPayload[Index].PlatformDirection;
 
 	FVector Origin;
 	FVector BoxExtent;
 	SpawnedActor->GetActorBounds(false, Origin, BoxExtent);
-	PlatformLocation.Z -= BoxExtent.Z * 2;
+	PlatformLocation.Z -= BoxExtent.Z * 2.f;
 
 	BoxComponent->SetBoxExtent(BoxExtent);
 	BoxComponent->SetWorldLocation(SpawnedActor->GetActorLocation());
 }
 
-void ACDPlatformHub::DeletePlatform()
+void ACDPlatformHub::DeletePlatform(int32 Index)
 {
-	PlatformArray[0]->Destroy();
-	PlatformArray.RemoveAt(0);
+	PlatformArray[Index]->Destroy();
+	PlatformArray.RemoveAt(Index);
 }
 
 void ACDPlatformHub::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (Cast<ACDPaperCharacter>(OtherActor))
 	{
-		SpawnPlatform();
+		int32 Random = 0;
+
+        do
+            Random = FMath::RandRange(0, PlatformPayload.Num() - 1);
+        while (PlatformPayload[Random].PlatformDirection == PlatformDirection || PlatformPayload[Random].PlatformDirection == PlatformState);
+
+		SpawnPlatform(Random);
 
 		if (PlatformArray.Num() > PlatformCount)
-			DeletePlatform();
+			DeletePlatform(0);
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, "Overlap " + OverlappedComp->GetName());
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, "Overlap " + OtherComp->GetName());
 	}
 	else if (Cast<ACDAICharacter>(OtherActor))
 	{

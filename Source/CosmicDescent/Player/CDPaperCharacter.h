@@ -79,9 +79,11 @@ private:
 	FTimerHandle SlideTimer;
 	bool bIsSliding = false;
 	float SlideDuration = 0.5f;
-	float SlideMultiplier = 5.0f;
+	float SlideMultiplier = 4.5f;
+	float SlideFriction = 0.f;
 	float SlideDeleration = 128.f;
-	float DefaultDeleration = 2048.f;
+	float DefaultFriction = 3.f;
+	float DefaultDeleration = 512.f;
 
 	FVector InputVelocity = FVector::ZeroVector;
 };

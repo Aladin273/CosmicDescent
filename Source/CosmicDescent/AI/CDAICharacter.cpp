@@ -45,6 +45,22 @@ void ACDAICharacter::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* Othe
 		Player->GetCapsuleComponent()->SetSimulatePhysics(true);
 	
 	if (Cast<ACDBlock>(OtherActor))
+	{
+		StartStuck();
 		OtherActor->Destroy();
+	}
+}
+
+void ACDAICharacter::StartStuck()
+{
+	DefaultForceSpeed = ForceSpeed;
+	ForceSpeed *= StuckMultiplier;
+	GetWorld()->GetTimerManager().SetTimer(StuckTimer, this, &ACDAICharacter::StopStuck, StuckTime, false);
+}
+
+void ACDAICharacter::StopStuck()
+{
+	ForceSpeed = DefaultForceSpeed;
+	GetWorld()->GetTimerManager().ClearTimer(StuckTimer);
 }
 

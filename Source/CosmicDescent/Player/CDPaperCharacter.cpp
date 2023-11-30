@@ -39,6 +39,7 @@ void ACDPaperCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACDPaperCharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACDPaperCharacter::StopJumping);
 	PlayerInputComponent->BindAction("Slide", IE_Pressed, this, &ACDPaperCharacter::Slide);
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACDPaperCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACDPaperCharacter::MoveRight);
@@ -103,7 +104,9 @@ void ACDPaperCharacter::StartSliding()
 {
 	bIsSliding = true;
 	Controller->SetIgnoreMoveInput(true);
+	DefaultFriction = GetCharacterMovement()->GroundFriction;
 	DefaultDeleration = GetCharacterMovement()->BrakingDecelerationWalking;
+	GetCharacterMovement()->GroundFriction = SlideFriction;
 	GetCharacterMovement()->BrakingDecelerationWalking = SlideDeleration;
 	LaunchCharacter(GetVelocity() / SlideMultiplier, false, false);
 	GetWorld()->GetTimerManager().SetTimer(SlideTimer, this, &ACDPaperCharacter::StopSliding, SlideDuration, false);
@@ -113,6 +116,7 @@ void ACDPaperCharacter::StopSliding()
 {
 	bIsSliding = false;
 	Controller->SetIgnoreMoveInput(false);
+	GetCharacterMovement()->GroundFriction = DefaultFriction;
 	GetCharacterMovement()->BrakingDecelerationWalking = DefaultDeleration;
 	GetWorld()->GetTimerManager().ClearTimer(SlideTimer);
 }

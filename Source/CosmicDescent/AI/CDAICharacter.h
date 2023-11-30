@@ -31,6 +31,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float ForceAcceleration = 2.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float StuckMultiplier = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float StuckTime = 0.2f;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -42,5 +48,11 @@ protected:
 	virtual void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
+	void StartStuck();
+	void StopStuck();
+
+	FTimerHandle StuckTimer;
 	FTimerHandle ForceTimer;
+
+	float DefaultForceSpeed = 2000.f;
 };
