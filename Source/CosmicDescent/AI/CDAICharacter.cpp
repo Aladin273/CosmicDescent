@@ -10,17 +10,15 @@
 ACDAICharacter::ACDAICharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
 	StaticMesh->SetSimulatePhysics(true);
-	
 	SetRootComponent(StaticMesh);
 }
 
 void ACDAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	RawForceAcceleration = FMath::Pow(1 / ForceAcceleration, 2);
 	StaticMesh->OnComponentBeginOverlap.AddDynamic(this, &ACDAICharacter::OnOverlap);
 	GetWorld()->GetTimerManager().SetTimer(ForceTimer, this, &ACDAICharacter::UpdateForce, ForceUpdateTime, true);
 }
@@ -28,13 +26,28 @@ void ACDAICharacter::BeginPlay()
 void ACDAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	StaticMesh->AddForce(ForceVector * ForceSpeed);
 }
 
 void ACDAICharacter::UpdateForce()
 {
-	ForceSpeed += ForceAcceleration;
+    ForceAcceleration = 1 / FMath::Sqrt(RawForceAcceleration);
+    ForceSpeed += ForceAcceleration;
+    ForceAccelerationStep *= 1.025f;
+    RawForceAcceleration += ForceAccelerationStep;
+}
+
+void ACDAICharacter::StartStuck()
+{
+    LastForceSpeed = ForceSpeed;
+    ForceSpeed *= StuckMultiplier;
+    GetWorld()->GetTimerManager().SetTimer(StuckTimer, this, &ACDAICharacter::StopStuck, StuckTime, false);
+}
+
+void ACDAICharacter::StopStuck()
+{
+    ForceSpeed = LastForceSpeed;
+    GetWorld()->GetTimerManager().ClearTimer(StuckTimer);
 }
 
 void ACDAICharacter::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -50,17 +63,3 @@ void ACDAICharacter::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* Othe
 		OtherActor->Destroy();
 	}
 }
-
-void ACDAICharacter::StartStuck()
-{
-	DefaultForceSpeed = ForceSpeed;
-	ForceSpeed *= StuckMultiplier;
-	GetWorld()->GetTimerManager().SetTimer(StuckTimer, this, &ACDAICharacter::StopStuck, StuckTime, false);
-}
-
-void ACDAICharacter::StopStuck()
-{
-	ForceSpeed = DefaultForceSpeed;
-	GetWorld()->GetTimerManager().ClearTimer(StuckTimer);
-}
-

@@ -29,7 +29,10 @@ public:
 	float ForceUpdateTime = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float ForceAcceleration = 2.f;
+	float ForceAcceleration = 5.f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+    float ForceAccelerationStep = 0.00015f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float StuckMultiplier = 0.0f;
@@ -44,15 +47,17 @@ protected:
 
 	virtual void UpdateForce();
 
+	virtual void StartStuck();
+    
+	virtual void StopStuck();
+
 	UFUNCTION()
 	virtual void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
-	void StartStuck();
-	void StopStuck();
-
 	FTimerHandle StuckTimer;
 	FTimerHandle ForceTimer;
 
-	float DefaultForceSpeed = 2000.f;
+	float LastForceSpeed = 0.f;
+	float RawForceAcceleration = 0.f;
 };
