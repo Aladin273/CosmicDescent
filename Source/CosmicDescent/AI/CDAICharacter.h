@@ -26,13 +26,16 @@ public:
 	float ForceSpeed = 2000.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float ForceUpdateTime = 1.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float ForceAcceleration = 5.f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
     float ForceAccelerationStep = 0.00015f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+    float ForceAccelerationMultiplier = 1.025f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float ForceUpdateTime = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float StuckMultiplier = 0.0f;

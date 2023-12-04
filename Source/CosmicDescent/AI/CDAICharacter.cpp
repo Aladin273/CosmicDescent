@@ -33,7 +33,7 @@ void ACDAICharacter::UpdateForce()
 {
     ForceAcceleration = 1 / FMath::Sqrt(RawForceAcceleration);
     ForceSpeed += ForceAcceleration;
-    ForceAccelerationStep *= 1.025f;
+    ForceAccelerationStep *= ForceAccelerationMultiplier;
     RawForceAcceleration += ForceAccelerationStep;
 }
 
